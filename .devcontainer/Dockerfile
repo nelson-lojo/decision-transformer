@@ -4,8 +4,11 @@ FROM mcr.microsoft.com/devcontainers/miniconda:0-3
 # copy "noop.txt" so the COPY instruction does not fail if no environment.yml exists.
 COPY gym/conda_env.yml* .devcontainer/noop.txt /tmp/conda-tmp/
 RUN mv /tmp/conda-tmp/conda_env.yml /tmp/conda-tmp/environment.yml
-RUN if [ -f "/tmp/conda-tmp/environment.yml" ]; then umask 0002 && /opt/conda/bin/conda env update -n base -f /tmp/conda-tmp/environment.yml; fi \
+RUN if [ -f "/tmp/conda-tmp/environment.yml" ]; then umask 0002 && /opt/conda/bin/conda env create -f /tmp/conda-tmp/environment.yml; fi \
     && rm -rf /tmp/conda-tmp
+
+RUN conda init
+RUN echo "conda activate decision-transformer-gym" > ~/.bashrc
 
 # [Optional] Uncomment to install a different version of Python than the default
 # RUN conda install -y python=3.6 \
