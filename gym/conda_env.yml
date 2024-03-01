@@ -15,4 +15,4 @@ dependencies:
   - pytorch-cuda==11.8
   - transformers==4.5.1
   - wandb==0.9.1
-  - "--editable=git+https://github.com/Farama-Foundation/d4rl@master#egg=d4rl"
+  # - "--editable=git+https://github.com/Farama-Foundation/d4rl@master#egg=d4rl"
