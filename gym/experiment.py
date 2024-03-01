@@ -292,7 +292,8 @@ def experiment(
         )
         # wandb.watch(model)  # wandb has some bug
     else:
-        log = logger(f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_head']}_H{variant['n_head']}.pkl")
+        logfile = "logs/" + f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_head']}_H{variant['n_head']}.pkl"
+        log = logger(logfile)
 
     for iter in range(variant['max_iters']):
         outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
