@@ -7,6 +7,7 @@ import argparse
 import pickle
 import random
 import sys
+import os
 
 from decision_transformer.evaluation.evaluate_episodes import evaluate_episode, evaluate_episode_rtg
 from decision_transformer.models.decision_transformer import DecisionTransformer
@@ -265,6 +266,23 @@ def experiment(
             eval_fns=[eval_episodes(tar) for tar in env_targets],
         )
 
+    def logger(path):
+        log = []
+        with open(path, "wb") as f:
+            pickle.dump(log, f)
+
+        def log(entry):
+            
+            with open(path, 'rb') as f:
+                log = pickle.load(f)
+
+            log.append(entry)
+
+            with open(path, "wb") as f:
+                pickle.dump(log, f)
+
+        return log
+
     if log_to_wandb:
         wandb.init(
             name=exp_prefix,
@@ -273,11 +291,15 @@ def experiment(
             config=variant
         )
         # wandb.watch(model)  # wandb has some bug
+    else:
+        log = logger(f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_head']}_H{variant['n_head']}.pkl")
 
     for iter in range(variant['max_iters']):
         outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
         if log_to_wandb:
             wandb.log(outputs)
+        else:
+            log(outputs)
 
 
 if __name__ == '__main__':
