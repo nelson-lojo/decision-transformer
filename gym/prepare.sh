@@ -16,6 +16,8 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
 
 conda env create -f conda_env.yml
 
+conda activate decision-transformer-gym
+pip install git+https://github.com/Farama-Foundation/d4rl@master#egg=d4rl
 cd data/ && python download_d4rl_datasets.python
 cd ../
 
