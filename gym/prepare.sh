@@ -14,9 +14,7 @@ mv mujoco210/ ~/.mujoco/mujoco210
 rm mujoco210-linux-x86_64.tar.gz 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
 
-/opt/conda/bin/conda env create -f conda_env.yml
-conda init
-echo "conda activate decision-transformer-gym" > ~/.bashrc
+conda env create -f conda_env.yml
 
 cd data/ && python download_d4rl_datasets.python
 cd ../
