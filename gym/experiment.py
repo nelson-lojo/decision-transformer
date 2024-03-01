@@ -292,7 +292,11 @@ def experiment(
         )
         # wandb.watch(model)  # wandb has some bug
     else:
-        logfile = "logs/" + f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_head']}_H{variant['n_head']}.pkl"
+        logdir = "logs/"
+        if not os.path.isdir(logdir):
+            os.mkdir(logdir)
+
+        logfile = logdir + f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_head']}_H{variant['n_head']}.pkl"
         log = logger(logfile)
 
     for iter in range(variant['max_iters']):
