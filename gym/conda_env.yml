@@ -1,6 +1,9 @@
 name: decision-transformer-gym
 channels:
 - pytorch
+- conda-forge
+- powerai
+- nvidia
 dependencies:
 - python=3.8.5
 - anaconda
