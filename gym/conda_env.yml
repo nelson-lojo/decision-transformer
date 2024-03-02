@@ -8,7 +8,7 @@ dependencies:
 - python=3.8.5
 - anaconda
 - cudatoolkit=12.1
-- pytorch-cuda=11.8
+- pytorch-cuda=12.1
 - pytorch
 - numpy
 - pip
