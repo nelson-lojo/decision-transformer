@@ -298,7 +298,7 @@ def experiment(
         if not os.path.isdir(logdir):
             os.mkdir(logdir)
 
-        logfile = logdir + f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_head']}_H{variant['n_head']}.pkl"
+        logfile = logdir + f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_inner']}_H{variant['n_head']}.pkl"
         log = logger(logfile)
 
     prog_bar = tqdm(total=variant['num_steps_per_iter'], unit="step", leave=False)
