@@ -34,3 +34,37 @@ download_data() {
     cd ../
 }
 
+
+
+run_experiment() {
+    task=$1
+    layer=$2
+    embd=$3
+    inner=$4
+    heads=$5
+
+    screen -S Training_L"$layers"_E"$embd"_I"$inner"_H"$heads" \
+        -dm python experiment.py --env $task --dataset expert --model_type dt --embed_dim $embd --n_layer $layer --n_head $heads --n_inner $inner --max_iters 25
+}
+
+test_experiment() {
+    task=$1
+    python experiment.py --env $task --dataset expert --model_type dt --max_iters 2 --num_steps_per_iter 5 --num_eval_episodes 1
+}
+
+sweep() {
+    command=$1
+    layers=(4 5 6)
+    embeds=(12 16 24 32 48)
+    in_facs=(0.5 1 2 3 4)
+
+    for layr in "${layers[@]}"; do
+    for embd in "${embeds[@]}"; do
+    for in_f in "${in_facs[@]}"; do
+        inner_dim_intermediate=$(echo "scale=0; $in_f * $embd" | bc)
+        innd=${inner_dim_intermediate%.*}
+        $command halfcheetah $layr $embd $innd 1
+    done; done; done
+}
+
+
