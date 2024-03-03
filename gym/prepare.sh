@@ -14,17 +14,19 @@ install_mujoco() {
     mkdir ~/.mujoco/
     mv mujoco210/ ~/.mujoco/mujoco210
     rm mujoco210-linux-x86_64.tar.gz 
-
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia
 }
 
-prep_env() {
+prep_conda() {
     conda env create -f conda_env.yml
 
     conda activate decision-transformer-gym
     $CONDA_PREFIX/bin/pip3 install git+https://github.com/Farama-Foundation/d4rl@master#egg=d4rl
     $CONDA_PREFIX/bin/pip install typing_extensions==4.4.0
+}
+
+prep_env() {
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia
 }
 
 download_data() {
@@ -55,8 +57,8 @@ test_experiment() {
 sweep() {
     command=$1
     layers=(4 5 6)
-    embeds=(12 16 24 32 48)
-    in_facs=(0.5 1 2 3 4)
+    embeds=(12 16 24 48)
+    in_facs=(0.5 2 4)
 
     for layr in "${layers[@]}"; do
     for embd in "${embeds[@]}"; do
@@ -64,6 +66,7 @@ sweep() {
         inner_dim_intermediate=$(echo "scale=0; $in_f * $embd" | bc)
         innd=${inner_dim_intermediate%.*}
         $command halfcheetah $layr $embd $innd 1
+        sleep 1
     done; done; done
 }
 
