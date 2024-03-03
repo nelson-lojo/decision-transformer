@@ -3,6 +3,7 @@ import torch
 
 import time
 
+from tqdm import tqdm
 
 class Trainer:
 
@@ -18,10 +19,12 @@ class Trainer:
 
         self.start_time = time.time()
 
-    def train_iteration(self, num_steps, iter_num=0, print_logs=False):
+    def train_iteration(self, num_steps, iter_num=0, print_logs=False, prog_bar=None):
 
         train_losses = []
         logs = dict()
+        if prog_bar is None:
+            prog_bar = tqdm(total=num_steps)
 
         train_start = time.time()
 
@@ -31,6 +34,7 @@ class Trainer:
             train_losses.append(train_loss)
             if self.scheduler is not None:
                 self.scheduler.step()
+            prog_bar.update(1)
 
         logs['time/training'] = time.time() - train_start
 

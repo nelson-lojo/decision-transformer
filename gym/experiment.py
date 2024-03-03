@@ -9,6 +9,8 @@ import random
 import sys
 import os
 
+from tqdm import tqdm
+
 from decision_transformer.evaluation.evaluate_episodes import evaluate_episode, evaluate_episode_rtg
 from decision_transformer.models.decision_transformer import DecisionTransformer
 from decision_transformer.models.mlp_bc import MLPBCModel
@@ -299,12 +301,16 @@ def experiment(
         logfile = logdir + f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_head']}_H{variant['n_head']}.pkl"
         log = logger(logfile)
 
+    prog_bar = tqdm(total=variant['num_steps_per_iter'], unit="step", leave=True)
     for iter in range(variant['max_iters']):
+        prog_bar.set_description(f"Training Iteration {iter+1}", refresh=True)
         outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
         if log_to_wandb:
             wandb.log(outputs)
         else:
             log(outputs)
+        prog_bar.reset()
+    prog_bar.close()
 
 
 if __name__ == '__main__':
