@@ -301,7 +301,7 @@ def experiment(
         logfile = logdir + f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_head']}_H{variant['n_head']}.pkl"
         log = logger(logfile)
 
-    prog_bar = tqdm(total=variant['num_steps_per_iter'], unit="step")
+    prog_bar = tqdm(total=variant['num_steps_per_iter'], unit="step", leave=False)
     for iter in range(variant['max_iters']):
         prog_bar.reset()
         prog_bar.set_description(f"Training Iteration {iter+1}", refresh=True)
