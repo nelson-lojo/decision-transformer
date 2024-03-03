@@ -7,7 +7,7 @@ channels:
 dependencies:
 - python=3.8.5
 - anaconda
-- cudatoolkit=12.1
+- cudatoolkit
 - pytorch-cuda=12.1
 - pytorch
 - numpy
