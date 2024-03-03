@@ -217,7 +217,7 @@ def experiment(
             hidden_size=variant['embed_dim'],
             n_layer=variant['n_layer'],
             n_head=variant['n_head'],
-            n_inner=4*variant['embed_dim'],
+            n_inner=variant['n_inner'],
             activation_function=variant['activation_function'],
             n_positions=1024,
             resid_pdrop=variant['dropout'],
@@ -326,6 +326,7 @@ if __name__ == '__main__':
     parser.add_argument('--embed_dim', type=int, default=128)
     parser.add_argument('--n_layer', type=int, default=3)
     parser.add_argument('--n_head', type=int, default=1)
+    parser.add_argument('--n_inner', type=int, default=4*128)
     parser.add_argument('--activation_function', type=str, default='relu')
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)
