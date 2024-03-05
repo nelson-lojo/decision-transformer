@@ -62,7 +62,7 @@ def experiment(
     elif env_name == 'ant':
         env = gym.make('Ant-v3')
         max_ep_len = 1000
-        env_targets = [12000, 6000]
+        env_targets = [6000, 3000]
         scale = 1000.
     else:
         raise NotImplementedError
