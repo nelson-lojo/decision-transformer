@@ -1,0 +1,47 @@
+
+# OpenAI Gym
+
+## Installation
+
+Experiments require MuJoCo.
+Follow the code written in prepare.sh, running the corresponding shell functions. Shell functions can be run in lambda with:
+
+```
+bash prepare.sh function_name arg0 arg1 ...
+```
+For example, installing MuJoCo would be:
+
+```
+bash prepare.sh install_mujoco
+```
+
+We also need conda. Install it with the install_conda function in prepare.sh. You may need to add it to the path using:
+```
+nano ~/.bashrc
+```
+This will open .bashrc to edit. Add at the bottom:
+```
+export PATH=~/miniconda3/bin:$PATH
+```
+Save and exit with ctrl+x, then update changes with:
+```
+source ~/.bashrc
+```
+
+## Downloading datasets
+
+Datasets are stored in the `data` directory.
+Follow the code written in prepare.sh, running the corresponding shell functions.
+
+
+## Example usage
+
+Experiments can be reproduced with the following:
+
+```
+python experiment.py --env hopper --dataset medium --model_type dt
+```
+
+Adding `-w True` will log results to Weights and Biases.
+
+It's more straightforward to just use the prepare.sh functions for this.
