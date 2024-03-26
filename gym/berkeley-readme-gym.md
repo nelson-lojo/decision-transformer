@@ -60,3 +60,8 @@ It's more straightforward to just use the prepare.sh functions for this. For exa
 ```
 test_experiment hopper
 ```
+
+If you are running into the error "fatal error: GL/glew.h: No such file or directory" run:
+```
+sudo apt-get install libglew-dev
+```
