@@ -44,6 +44,12 @@ source ~/.bashrc
 Datasets are stored in the `data` directory.
 Follow the code written in prepare.sh, running the corresponding shell functions.
 
+## Examining datasets
+
+`pklopener.py` can be used to check the formatting of the pickle file. Use by calling:
+```
+python pklopener.py file_name.pkl
+```
 
 ## Example usage
 
