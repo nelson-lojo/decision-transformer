@@ -51,6 +51,13 @@ def data_to_trajectory(file_name):
     with open(f'{name}.pkl', 'wb') as f:
         pickle.dump(output, f)
 
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('file_name', type=str, default='hopper')
+    args = parser.parse_args()
+    data_to_trajectory(args.file_name)
+    
+
 # take in two file_names for trajectories/training
 # combines the trajectories in both into a combined file with the given name
 def merge_trajectories(file_name1, file_name2, name):
@@ -59,7 +66,7 @@ def merge_trajectories(file_name1, file_name2, name):
         temp = pickle.load(f)
         if isinstance(temp, list):
             trajectories = temp
-        else if isinstance(temp, dict):
+        elif isinstance(temp, dict):
             trajectories.append(temp)
         else:
             raise TypeError("file1 is neither list nor dict")
@@ -69,7 +76,7 @@ def merge_trajectories(file_name1, file_name2, name):
         if isinstance(temp, list):
             for trajectory in temp:
                 trajectories.append(trajectory)
-        else if isinstance(temp, dict):
+        elif isinstance(temp, dict):
             trajectories.append(temp)
         else:
             raise TypeError("file2 is neither list nor dict")
