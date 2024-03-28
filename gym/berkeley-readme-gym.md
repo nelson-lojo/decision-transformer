@@ -44,12 +44,13 @@ source ~/.bashrc
 Datasets are stored in the `data` directory.
 Follow the code written in prepare.sh, running the corresponding shell functions.
 
-## Examining datasets
+## Manipulating data
 
 `pklopener.py` can be used to check the formatting of the pickle file. Use by calling:
 ```
-python pklopener.py file_name.pkl
+python pklopener.py file_name
 ```
+`datapkler.py` can be used to turn a list or tuple into a pkl file formatted for `file_to_trajectory.py`. `file_to_trajectory.py` takes in a pkl file of tuples and converts them into a trajectory file that a model can be run on.
 
 ## Example usage
 
