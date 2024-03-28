@@ -18,6 +18,11 @@ def check_format(data_struct, indent = 0):
             check_format(data_struct[key], indent+1)
     elif isinstance(data_struct, np.ndarray):
         print(gap + f'np array: {data_struct.shape}')
+    elif isinstance(data_struct, tuple):
+        print(gap + f'tuple length:{len(data_struct)}')
+        for i in range(len(data_struct)):
+            print(gap + f'{i}: {type(data_struct[i])}')
+            check_format(data_struct[i], indent+1)
 
 
 if __name__ == '__main__':
@@ -25,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('dataset')
     args = parser.parse_args()
     
-    with open(args.dataset, 'rb') as f:
+    with open(f'{args.dataset}.pkl', 'rb') as f:
         data = pickle.load(f)
     
     # view the format of the pickle file

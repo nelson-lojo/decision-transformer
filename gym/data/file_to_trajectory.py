@@ -11,15 +11,10 @@ import os
 
 from tqdm import tqdm
 
-from decision_transformer.evaluation.evaluate_episodes import evaluate_episode, evaluate_episode_rtg
-from decision_transformer.models.decision_transformer import DecisionTransformer
-from decision_transformer.models.mlp_bc import MLPBCModel
-from decision_transformer.training.act_trainer import ActTrainer
-from decision_transformer.training.seq_trainer import SequenceTrainer
 
 # file_name is a pickle file containing a list of tuples (reward, observation, action) that are assumed sequential
 # data_to_trajectory will convert the file of tuples to a pickle file with a trajectory
-def data_to_trajectory(file_name):
+def datafile_to_trajectory(file_name, name):
     
     output = {}
     
@@ -41,11 +36,11 @@ def data_to_trajectory(file_name):
             # need to figure out how to get terminals
             terminals.append(False)
 
-        output['observations'] = observations
-        output['next_observations'] = next_observations
-        output['actions'] = actions
-        output['rewards'] = rewards
-        output['terminals'] = terminals
+        output['observations'] = np.array(observations)
+        output['next_observations'] = np.array(next_observations)
+        output['actions'] = np.array(actions)
+        output['rewards'] = np.array(rewards)
+        output['terminals'] = np.array(terminals)
 
 
     with open(f'{name}.pkl', 'wb') as f:
@@ -53,9 +48,10 @@ def data_to_trajectory(file_name):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('file_name', type=str, default='hopper')
+    parser.add_argument('file_name', type=str, default='test1')
+    parser.add_argument('name', type=str, default="test2")
     args = parser.parse_args()
-    data_to_trajectory(args.file_name)
+    datafile_to_trajectory(args.file_name, args.name)
     
 
 # take in two file_names for trajectories/training
