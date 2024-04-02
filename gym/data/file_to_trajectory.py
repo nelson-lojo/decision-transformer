@@ -52,33 +52,6 @@ if __name__ == '__main__':
     datafile_to_trajectory(args.file_name, args.name)
     
 
-# take in two file_names for trajectories/training
-# combines the trajectories in both into a combined file with the given name
-def merge_trajectories(file_name1, file_name2, name):
-    trajectories = []
-    with open(f'{file_name1}.pkl', 'rb') as f:
-        temp = pickle.load(f)
-        if isinstance(temp, list):
-            trajectories = temp
-        elif isinstance(temp, dict):
-            trajectories.append(temp)
-        else:
-            raise TypeError("file1 is neither list nor dict")
-
-    with open(f'{file_name2}.pkl', 'rb') as f:
-        temp = pickle.load(f)
-        if isinstance(temp, list):
-            for trajectory in temp:
-                trajectories.append(trajectory)
-        elif isinstance(temp, dict):
-            trajectories.append(temp)
-        else:
-            raise TypeError("file2 is neither list nor dict")
-    
-    with open(f'{name}.pkl', 'wb') as f:
-        pickle.dump(trajectories, f)
-    
-
         
     
         
