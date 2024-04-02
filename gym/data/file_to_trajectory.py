@@ -12,7 +12,7 @@ import os
 from tqdm import tqdm
 
 
-# file_name is a pickle file containing a list of tuples (reward, observation, action) that are assumed sequential
+# file_name is a pickle file containing a list of tuples (reward, observation, action, terminals) that are assumed sequential
 # data_to_trajectory will convert the file of tuples to a pickle file with a trajectory
 def datafile_to_trajectory(file_name, name):
     
@@ -32,9 +32,7 @@ def datafile_to_trajectory(file_name, name):
             next_observations.append(data[i + 1][1])
             actions.append(data[i][2])
             rewards.append(data[i][0])
-
-            # need to figure out how to get terminals
-            terminals.append(False)
+            terminals.append(data[i][3])
 
         output['observations'] = np.array(observations)
         output['next_observations'] = np.array(next_observations)

@@ -14,17 +14,24 @@ from tqdm import tqdm
 
 # convert dict of data to a file of tuples
 # or a list of tuples to a file of tuples
+# if no terminal info is given, it assumes all are false
 def data_to_file(data, file_name, isList = False):
     if isList:
         with open(f'{file_name}.pkl', 'wb') as f:
             pickle.dump(data,f)
         return
-    keys = ["rewards", "observations", "actions"]
+    keys = ["rewards", "observations", "actions", "terminals"]
     result = []
     for i in range(len(data[keys[0]])):
         tup = []
         for key in keys:
-            tup.append(data[key][i])
+            try:
+                tup.append(data[key][i])
+            except KeyError:
+                if key == "terminals":
+                    tup.append(False)
+                else:
+                    raise KeyError(f'Missing {key}')
         result.append(tuple(tup))
     with open(f'{file_name}.pkl', 'wb') as f:
         pickle.dump(result,f)
