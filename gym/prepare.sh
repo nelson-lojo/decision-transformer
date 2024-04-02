@@ -45,7 +45,7 @@ run_experiment() {
     embd=$3
     inner=$4
     heads=$5
-
+    
     screen -S Training_L"$layers"_E"$embd"_I"$inner"_H"$heads" \
         -dm python experiment.py --env $task --dataset expert --model_type dt --embed_dim $embd --n_layer $layer --n_head $heads --n_inner $inner --max_iters 25
 }
@@ -71,4 +71,5 @@ sweep() {
     done; done; done
 }
 
+"$@"
 
