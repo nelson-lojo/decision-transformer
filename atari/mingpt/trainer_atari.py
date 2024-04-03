@@ -72,7 +72,7 @@ class Trainer:
         # DataParallel wrappers keep raw model object in .module attribute
         raw_model = self.model.module if hasattr(self.model, "module") else self.model
         logger.info("saving %s", self.config.ckpt_path)
-        # torch.save(raw_model.state_dict(), self.config.ckpt_path)
+        torch.save(raw_model.state_dict(), self.config.ckpt_path)
 
     def train(self):
         model, config = self.model, self.config
@@ -153,6 +153,13 @@ class Trainer:
             # if self.config.ckpt_path is not None and good_model:
             #     best_loss = test_loss
             #     self.save_checkpoint()
+
+            if self.config.ckpt_path is not None:
+                self.save_checkpoint()
+            else:
+                self.config.ckpt_path = f"{epoch}state.pt"
+                self.save_checkpoint()
+
 
             # -- pass in target returns
             if self.config.model_type == 'naive':
