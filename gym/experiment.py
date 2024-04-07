@@ -239,6 +239,25 @@ def experiment(
     else:
         raise NotImplementedError
 
+    # for quantization
+    if hasattr(model, quant):
+        model.eval()
+        # adding observers
+        model.qconfig = torch.ao.quantization.get_default_qconfig('x86')
+        # for fusing activations
+        #model = torch.ao.quantization.fuse_modules(model, [['conv', 'relu']])
+        model = torch.ao.quantization.prepare(model)
+
+        # calibration with test data, not sure if this is right
+        if model_type == 'dt':
+            states, actions, rewards, dones, rtg, timesteps, attention_mask = get_batch(batch_size)
+            model.get_action(states, actions, rewards, rtg[:,:-1], timesteps, attention_mask=attention_mask)
+        elif model_type == 'bc':
+            states, actions, rewards, dones, rtg, _, attention_mask = get_batch(batch_size)
+            model.get_action(states, actions, rewards, attention_mask=attention_mask, target_return=rtg[:,0],)
+        # quantize
+        torch.ao.quantization.convert(model, inplace=True)
+    
     model = model.to(device=device)
 
     warmup_steps = variant['warmup_steps']
