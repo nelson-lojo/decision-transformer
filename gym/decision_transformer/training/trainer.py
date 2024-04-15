@@ -31,6 +31,7 @@ class Trainer:
         train_start = time.time()
 
         model_type = type(self.model).__name__
+        model_type = model_type.lower()
 
         state_path = os.path.join(f'gym/checkpoints/{model_type}', "state.pt")
         start_step = 0
