@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import os
 
 
 def evaluate_episode(
@@ -138,3 +139,28 @@ def evaluate_episode_rtg(
             break
 
     return episode_return, episode_length
+
+def load_model_from_type(model_type, timesteps = []):
+    state_path = os.path.join(f'gym/checkpoints/{model_type}', "state.pt")
+
+    models = {}
+
+    if os.path.exists(state_path):
+        checkpoint = torch.load(state_path)
+        model = checkpoint['state_dict']
+        optimizer = checkpoint['optimizer']
+        step = checkpoint['step']
+
+        models[model_type] = model
+    
+    for timestep in timesteps:
+        iter_state_path = os.path.join(f'gym/checkpoints/{model_type}', f"state_{timestep}_steps.pt")
+        if os.path.exists(iter_state_path):
+            checkpoint = torch.load(iter_state_path)
+            model = checkpoint['state_dict']
+            optimizer = checkpoint['optimizer']
+            step = checkpoint['step']
+
+            models[f"model_type_{timestep}"] = model
+
+    return models
