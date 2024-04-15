@@ -213,21 +213,40 @@ def experiment(
             }
         return fn
 
+    quant = True
+    quant_aware = True
+    
     if model_type == 'dt':
-        model = DecisionTransformer(
-            state_dim=state_dim,
-            act_dim=act_dim,
-            max_length=K,
-            max_ep_len=max_ep_len,
-            hidden_size=variant['embed_dim'],
-            n_layer=variant['n_layer'],
-            n_head=variant['n_head'],
-            n_inner=variant['n_inner'],
-            activation_function=variant['activation_function'],
-            n_positions=1024,
-            resid_pdrop=variant['dropout'],
-            attn_pdrop=variant['dropout'],
-        )
+        if quant:
+            model = QuantizedDecisionTransformer(
+                state_dim=state_dim,
+                act_dim=act_dim,
+                max_length=K,
+                max_ep_len=max_ep_len,
+                hidden_size=variant['embed_dim'],
+                n_layer=variant['n_layer'],
+                n_head=variant['n_head'],
+                n_inner=variant['n_inner'],
+                activation_function=variant['activation_function'],
+                n_positions=1024,
+                resid_pdrop=variant['dropout'],
+                attn_pdrop=variant['dropout'],
+            )
+        else:
+            model = DecisionTransformer(
+                state_dim=state_dim,
+                act_dim=act_dim,
+                max_length=K,
+                max_ep_len=max_ep_len,
+                hidden_size=variant['embed_dim'],
+                n_layer=variant['n_layer'],
+                n_head=variant['n_head'],
+                n_inner=variant['n_inner'],
+                activation_function=variant['activation_function'],
+                n_positions=1024,
+                resid_pdrop=variant['dropout'],
+                attn_pdrop=variant['dropout'],
+            )
     elif model_type == 'bc':
         model = MLPBCModel(
             state_dim=state_dim,
@@ -306,6 +325,27 @@ def experiment(
         logfile = logdir + f"{model_type}_L{variant['n_layer']}_E{variant['embed_dim']}_I{variant['n_inner']}_H{variant['n_head']}.pkl"
         log = logger(logfile)
 
+    if quant:
+        if quant_aware:
+            return
+        else:
+            #static post-training quant
+            model.qconfig = torch.ao.quantization.get_default_qconfig('x86')
+
+            # for fusing activations to preceding layers
+            #model_fp32_fused = torch.ao.quantization.fuse_modules(model_fp32, [['conv', 'relu']])
+
+            # Prepare the model for static quantization. This inserts observers in
+            # the model that will observe activation tensors during calibration.
+            model_prepared = torch.ao.quantization.prepare(model)
+
+            # feeding a sample for calibration
+            states, actions, rewards, dones, rtg, timesteps, attention_mask = get_batch(batch_size)
+            state_preds, action_preds, reward_preds = model_prepared(
+                states, actions, rewards, rtg[:,:-1], timesteps, attention_mask=attention_mask,
+            )
+            model = torch.ao.quantization.convert(model_prepared)
+    
     prog_bar = tqdm(total=variant['num_steps_per_iter'], unit="step", leave=False)
     for iter in range(variant['max_iters']):
         prog_bar.reset()
