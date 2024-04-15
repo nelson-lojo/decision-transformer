@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 class Trainer:
 
-    def __init__(self, model, optimizer, batch_size, get_batch, loss_fn, scheduler=None, eval_fns=None):
+    def __init__(self, model, optimizer, batch_size, get_batch, loss_fn, scheduler=None, eval_fns=None, save_steps=1000):
         self.model = model
         self.optimizer = optimizer
         self.batch_size = batch_size
@@ -16,6 +16,7 @@ class Trainer:
         self.scheduler = scheduler
         self.eval_fns = [] if eval_fns is None else eval_fns
         self.diagnostics = dict()
+        self.save_steps = save_steps
 
         self.start_time = time.time()
 
@@ -29,12 +30,14 @@ class Trainer:
         train_start = time.time()
 
         self.model.train()
-        for _ in range(num_steps):
+        for i in range(num_steps):
             train_loss = self.train_step()
             train_losses.append(train_loss)
             if self.scheduler is not None:
                 self.scheduler.step()
             prog_bar.update(1)
+
+            if i % self.save_steps == 0:
 
         logs['time/training'] = time.time() - train_start
 
