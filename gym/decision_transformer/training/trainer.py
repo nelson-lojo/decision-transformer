@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import os
 
 import time
 
@@ -29,6 +30,18 @@ class Trainer:
 
         train_start = time.time()
 
+        model_type = type(self.model).__name__
+
+        state_path = os.path.join(f'gym/checkpoints/{model_type}', "state.pt")
+        start_step = 0
+        if os.path.exists(state_path):
+            checkpoint = torch.load(state_path) #Will break on iter load
+            self.model.load_state_dict(checkpoint["state_dict"])
+            self.optimizer.load_state_dict(checkpoint["optimizer"])
+            start_step = checkpoint["step"]
+        
+        num_steps = num_steps - start_step
+
         self.model.train()
         for i in range(num_steps):
             train_loss = self.train_step()
@@ -38,6 +51,22 @@ class Trainer:
             prog_bar.update(1)
 
             if i % self.save_steps == 0:
+                training_state = {
+                    "state_dict": self.model.state_dict(),
+                    "optimizer": self.optimizer.state_dict(),
+                    "step": i,
+                }
+
+                if not os.path.exists('gym/checkpoints'):
+                    os.makedirs('gym/checkpoints')
+                if not os.path.exists(f'gym/checkpoints/{model_type}'):
+                    os.makedirs(f'gym/checkpoints/{model_type}')
+                
+                #state_path = os.path.join(f'gym/checkpoints/{model_type}', "state.pt")
+                state_path_iter = os.path.join(f'gym/checkpoints/{model_type}', 'state_{i}_steps.pt')
+
+                torch.save(training_state, state_path)
+                torch.save(training_state, state_path_iter)
 
         logs['time/training'] = time.time() - train_start
 
