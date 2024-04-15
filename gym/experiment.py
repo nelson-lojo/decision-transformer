@@ -258,6 +258,41 @@ def experiment(
     else:
         raise NotImplementedError
 
+    # placeholder
+    # we need a better way to indicate if the model is quantization aware
+    training_aware_quant = False
+
+    # for static post-training quantization
+    if hasattr(model, quant) and not training_aware_quant:
+        model.eval()
+        # adding observers
+        model.qconfig = torch.ao.quantization.get_default_qconfig('x86')
+        # for fusing activations
+        #model = torch.ao.quantization.fuse_modules(model, [['conv', 'relu']])
+        model = torch.ao.quantization.prepare(model)
+
+        # calibration with test data, not sure if this is right
+        if model_type == 'dt':
+            states, actions, rewards, dones, rtg, timesteps, attention_mask = get_batch(batch_size)
+            model.get_action(states, actions, rewards, rtg[:,:-1], timesteps, attention_mask=attention_mask)
+        elif model_type == 'bc':
+            states, actions, rewards, dones, rtg, _, attention_mask = get_batch(batch_size)
+            model.get_action(states, actions, rewards, attention_mask=attention_mask, target_return=rtg[:,0],)
+        # quantize
+        torch.ao.quantization.convert(model, inplace=True)
+
+    # for static training-aware quantization
+    # we need to figure out a way to decide which quantization we're doing
+    if hasattr(model, quant) and training_aware_quant:
+        model.eval()
+        # adding observers
+        model.qconfig = torch.ao.quantization.get_default_qat_qconfig('x86')
+        # for fusing activations
+        #model = torch.ao.quantization.fuse_modules(model, [['conv', 'relu']])
+        model = torch.ao.quantization.prepare_qat(model.train())
+
+        # calibrate by training, continued after training:
+    
     model = model.to(device=device)
 
     warmup_steps = variant['warmup_steps']
@@ -355,6 +390,12 @@ def experiment(
             wandb.log(outputs)
         else:
             log(outputs)
+
+    # finishing quantization in quant-aware case
+    if hasattr(model, quant) and training_aware_quant:
+        model.eval()
+        # quantize
+        torch.ao.quantization.convert(model, inplace=True)
         
     prog_bar.close()
 
