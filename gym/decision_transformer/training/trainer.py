@@ -21,7 +21,7 @@ class Trainer:
 
         self.start_time = time.time()
 
-    def train_iteration(self, num_steps, iter_num=0, print_logs=False, prog_bar=None):
+    def train_iteration(self, num_steps, iter_num=0, print_logs=False, prog_bar=None, strictness=False):
 
         train_losses = []
         logs = dict()
@@ -37,8 +37,8 @@ class Trainer:
         start_step = 0
         if os.path.exists(state_path):
             checkpoint = torch.load(state_path) #Will break on iter load
-            self.model.load_state_dict(checkpoint["state_dict"], strict=False)
-            self.optimizer.load_state_dict(checkpoint["optimizer"], strict=False)
+            self.model.load_state_dict(checkpoint["state_dict"], strict=strictness)
+            self.optimizer.load_state_dict(checkpoint["optimizer"], strict=strictness)
             start_step = checkpoint["step"]
         
         num_steps = num_steps - start_step
