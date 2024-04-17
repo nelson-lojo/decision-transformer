@@ -37,8 +37,8 @@ class Trainer:
         start_step = 0
         if os.path.exists(state_path):
             checkpoint = torch.load(state_path) #Will break on iter load
-            self.model.load_state_dict(checkpoint["state_dict"])
-            self.optimizer.load_state_dict(checkpoint["optimizer"])
+            self.model.load_state_dict(checkpoint["state_dict"], strict=False)
+            self.optimizer.load_state_dict(checkpoint["optimizer"], strict=False)
             start_step = checkpoint["step"]
         
         num_steps = num_steps - start_step
